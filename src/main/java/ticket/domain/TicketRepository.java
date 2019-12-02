@@ -1,11 +1,13 @@
-package domain;
+package ticket.domain;
 
 import stereotypes.Repository;
+
+import java.util.Optional;
 
 @Repository
 public interface TicketRepository {
 
-    Ticket get(TicketID id);
+    Optional<Ticket> get(TicketID id);
 
     void add(Ticket ticket);
 

@@ -7,8 +7,12 @@
  */
 
 plugins {
-    // Apply the java-library plugin to add support for Java Library
-    `java-library`
+    val kotlinVersion = "1.3.21"
+    id("org.springframework.boot") version "2.1.2.RELEASE"
+    id("org.jetbrains.kotlin.jvm") version kotlinVersion
+    id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
+    id("org.jetbrains.kotlin.plugin.jpa") version kotlinVersion
+    id("io.spring.dependency-management") version "1.0.6.RELEASE"
 }
 
 repositories {
@@ -18,12 +22,15 @@ repositories {
 }
 
 dependencies {
-    // This dependency is exported to consumers, that is to say found on their compile classpath.
-    api("org.apache.commons:commons-math3:3.6.1")
-
-    // This dependency is used internally, and not exposed to consumers on their own compile classpath.
-    implementation("com.google.guava:guava:26.0-jre")
-
-    // Use JUnit test framework
-    testImplementation("org.junit.jupiter:junit-jupiter:5.5.2")
+    compile("org.springframework.boot:spring-boot-starter-web")
+    compile("org.springframework.boot:spring-boot-starter-data-jpa")
+    compile("com.h2database:h2")
+    compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    compile("org.jetbrains.kotlin:kotlin-reflect")
+    compile("com.fasterxml.jackson.module:jackson-module-kotlin")
+    testCompile("org.springframework.boot:spring-boot-starter-test") {
+        exclude(module = "junit")
+    }
+    testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
 }

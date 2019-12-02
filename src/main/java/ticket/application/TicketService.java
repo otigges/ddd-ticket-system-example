@@ -1,7 +1,11 @@
-package application;
+package ticket.application;
 
-import domain.*;
+import org.springframework.stereotype.Service;
+import ticket.domain.*;
 
+import java.util.Optional;
+
+@Service
 public class TicketService {
 
     private final TicketFactory factory;
@@ -19,17 +23,12 @@ public class TicketService {
         return ticket;
     }
 
-    public Ticket findTicket(TicketID id) {
+    public Optional<Ticket> findTicket(TicketID id) {
         return repository.get(id);
     }
 
-
-
-
-
-
-
-
-
+    public void update(Ticket ticket) {
+        repository.update(ticket);
+    }
 
 }

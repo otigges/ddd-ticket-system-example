@@ -1,4 +1,4 @@
-package domain;
+package ticket.domain;
 
 public enum Status {
 

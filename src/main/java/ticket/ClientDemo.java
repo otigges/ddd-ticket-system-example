@@ -1,4 +1,6 @@
-import domain.*;
+package ticket;
+
+import ticket.domain.*;
 
 public class ClientDemo {
 
