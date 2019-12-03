@@ -26,4 +26,8 @@ public class InMemoryTicketRepository implements TicketRepository {
     public void update(Ticket ticket) {
         storage.put(ticket.getId(), ticket);
     }
+
+    public void clear() {
+        storage.clear();
+    }
 }

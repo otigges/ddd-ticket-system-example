@@ -17,8 +17,8 @@ public class TicketService {
         this.repository = repository;
     }
 
-    public Ticket createTicket(UserID author, String title, String description) {
-        Ticket ticket = factory.createNewTicket(author, title, description);
+    public Ticket createTicket(UserID reporter, String title, String description) {
+        Ticket ticket = factory.createNewTicket(reporter, title, description);
         repository.add(ticket);
         return ticket;
     }

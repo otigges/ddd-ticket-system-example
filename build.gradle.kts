@@ -22,6 +22,7 @@ repositories {
 }
 
 dependencies {
+    val cucumberVersion = "4.7.4"
     compile("org.springframework.boot:spring-boot-starter-web")
     compile("org.springframework.boot:spring-boot-starter-data-jpa")
     compile("com.h2database:h2")
@@ -32,5 +33,8 @@ dependencies {
         exclude(module = "junit")
     }
     testImplementation("org.junit.jupiter:junit-jupiter-api")
+    testImplementation("io.cucumber:cucumber-junit:${cucumberVersion}")
+    testImplementation("io.cucumber:cucumber-java:${cucumberVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+    //testRuntimeOnly("org.junit.jupiter:junit-vintage-engine")
 }
