@@ -13,19 +13,15 @@ import org.springframework.web.util.UriComponentsBuilder;
 import ticket.application.TicketService;
 import ticket.domain.*;
 
-import javax.print.Doc;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
-import java.util.concurrent.atomic.AtomicLong;
 
 @RestController
 public class TicketRestEndpoint {
 
-    private static final String template = "Hello, %s!";
+
     public static final UserID JANE = new UserID("Jane");
-    private final AtomicLong counter = new AtomicLong();
+
+    public static final String BASE_URI = "http://localhost:8080/tickets/";
 
     private TicketService ticketService;
 
@@ -73,7 +69,7 @@ public class TicketRestEndpoint {
             method = RequestMethod.POST
     )
     public ResponseEntity<?> createSampleTicket(UriComponentsBuilder b) {
-        Ticket ticket = ticketService.createTicket(JANE, "Somthing is wrong.", "Some details.");
+        Ticket ticket = ticketService.createTicket(JANE, "Something is wrong.", "Some details.");
         ticket.watch(JANE);
         UriComponents uriComponents =
                 b.path("/tickets/{id}").buildAndExpand(ticket.getId());
@@ -83,29 +79,32 @@ public class TicketRestEndpoint {
         return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }
 
-    private Document toDoc(Ticket ticket) {
+    private Document<?> toDoc(Ticket ticket) {
         Document<TicketTO> doc = new Document<>(map(ticket));
-        String basePath = "http://localhost:8080/tickets/" + ticket.getId() + "/";
+        String basePath = BASE_URI + ticket.getId() + "/";
         for (Action action : ticket.getAllowedActions()) {
 
             String actionName = action.toString().toLowerCase();
-            doc.addLink(new Link(basePath + actionName, actionName));
+            doc.addLink(new Link(basePath + actionName, actionName).addMethods("POST"));
         }
-        doc.addLink(new Link(basePath + "watchers", "watchers"));
-        doc.addLink(new Link(basePath + "assign", "assign"));
-        doc.addLink(new Link(basePath + "attachments", "attach_file"));
-        doc.addLink(new Link(basePath + "comments", "add_comment"));
+        doc.addLink(new Link(basePath + "watchers", "watchers").addMethods("GET", "POST"));
+        doc.addLink(new Link(basePath + "assign", "assign").addMethods("POST"));
+        doc.addLink(new Link(basePath + "attachments", "attach_file").addMethods("GET", "POST"));
+        doc.addLink(new Link(basePath + "comments", "add_comment").addMethods("GET", "POST"));
         return doc;
     }
 
-    private Document toWatchersDoc(Ticket ticket) {
-        List<Document<String>> watcherDocs = new ArrayList<>();
-        Document<List<Document<String>>> doc = new Document<>(watcherDocs);
-        String basePath = "http://localhost:8080/tickets/" + ticket.getId() + "/";
+    private Document<WatcherListTO> toWatchersDoc(Ticket ticket) {
+        String basePath = BASE_URI + ticket.getId() + "/";
+        WatcherListTO list = new WatcherListTO();
+        Document<WatcherListTO> doc = new Document<>(list);
+        doc.addLink(new Link(basePath + "watchers", "add_watchers"));
         for (UserID watcher : ticket.getWatchers()) {
-            Document<String> current = new Document<>(watcher.toString());
-            watcherDocs.add(current);
-            Link add_watcher = new Link(basePath + "watcher", "self");
+            String name = watcher.toString();
+            Link link = new Link(basePath + "watchers/" + name, "self");
+            link.addMethods("GET", "PUT", "DELETE");
+            WatcherTO watcherTO = new WatcherTO(name, link);
+            list.addWatcher(watcherTO);
         }
         return doc;
     }
