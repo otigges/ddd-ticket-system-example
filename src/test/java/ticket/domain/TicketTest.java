@@ -18,12 +18,9 @@ public class TicketTest {
 
     private Stack<TicketEvent> EVENT_LOG = new Stack<>();
 
-    private TicketFactory ticketFactory = new TicketFactory(new DomainEventPublisher() {
-        @Override
-        public void publish(TicketEvent event) {
-            System.out.println(event);
-            EVENT_LOG.push(event);
-        }
+    private TicketFactory ticketFactory = new TicketFactory(event -> {
+        System.out.println(event);
+        EVENT_LOG.push(event);
     }, () -> new TicketID(ticketIdGen++) );
 
     @Test()

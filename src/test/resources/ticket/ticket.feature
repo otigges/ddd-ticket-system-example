@@ -1,6 +1,6 @@
 Feature: Creation of new tickets.
 
-  Scenario: Ticket creators are watchers
+  Scenario: Ticket creators are added to watch list
     Given No tickets exist
     When Jane creates new ticket
     Then Jane is in the list of watchers
