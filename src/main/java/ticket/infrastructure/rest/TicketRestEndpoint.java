@@ -4,15 +4,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponents;
 import org.springframework.web.util.UriComponentsBuilder;
 import ticket.application.TicketService;
 import ticket.domain.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 @RestController
@@ -28,6 +26,14 @@ public class TicketRestEndpoint {
     @Autowired
     public TicketRestEndpoint(TicketService ticketService) {
         this.ticketService = ticketService;
+    }
+
+    @GetMapping("/tickets")
+    public ResponseEntity<?>  getServiceDocument(HttpServletRequest request) {
+        ServiceInfo info = new ServiceInfo(request);
+
+        Document<ServiceInfo> document = new Document<>(info);
+        return new ResponseEntity(document, HttpStatus.OK);
     }
 
     @RequestMapping("/tickets/{id}")

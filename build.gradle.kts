@@ -23,13 +23,14 @@ repositories {
 
 dependencies {
     val cucumberVersion = "4.7.4"
-    compile("org.springframework.boot:spring-boot-starter-web")
-    compile("org.springframework.boot:spring-boot-starter-data-jpa")
-    compile("com.h2database:h2")
-    compile("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    compile("org.jetbrains.kotlin:kotlin-reflect")
-    compile("com.fasterxml.jackson.module:jackson-module-kotlin")
-    testCompile("org.springframework.boot:spring-boot-starter-test") {
+    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    implementation("com.h2database:h2")
+    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
+    implementation("org.jetbrains.kotlin:kotlin-reflect")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+    implementation("org.keycloak:keycloak-spring-boot-starter")
+    testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(module = "junit")
     }
     testImplementation("org.junit.jupiter:junit-jupiter-api")
@@ -38,3 +39,10 @@ dependencies {
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
     //testRuntimeOnly("org.junit.jupiter:junit-vintage-engine")
 }
+
+configure<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension> {
+    imports {
+        mavenBom("org.keycloak.bom:keycloak-adapter-bom:8.0.2")
+    }
+}
+
