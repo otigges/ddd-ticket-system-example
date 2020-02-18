@@ -1,0 +1,20 @@
+
+keycloak:
+  enabled: ${KEYCLOAK_ENABLED:false}
+  realm: ${KEYCLOAK_REALM:ticket-system}
+  auth-server-url: ${KEYCLOAK_AUTH_SERVER_URL:http://localhost:8070/auth}
+  ssl-required: external
+  resource: ticket-system
+  credentials:
+    secret: ${KEYCLOAK_CLIENT_SECRET:secret}
+  use-resource-role-mappings: false
+  security-constraints:
+    - auth-roles:
+      - admin
+      - user
+      - ticket-manager
+      security-collections:
+      - name: Ticket System
+        patterns:
+          - "/tickets/*"
+

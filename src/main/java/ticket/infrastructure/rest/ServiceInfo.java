@@ -30,7 +30,11 @@ public class ServiceInfo {
     }
 
     public String getUserInfo() {
-        AccessToken token = userPrincipal.getKeycloakSecurityContext().getToken();
-        return token.getPreferredUsername() + " " + token.getEmail();
+        if (userPrincipal != null) {
+            AccessToken token = userPrincipal.getKeycloakSecurityContext().getToken();
+            return token.getPreferredUsername() + " " + token.getEmail();
+        } else {
+            return "<unauthenticated>";
+        }
     }
 }

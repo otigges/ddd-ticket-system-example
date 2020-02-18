@@ -3,12 +3,12 @@
  *
  * This generated file contains a sample Java Library project to get you started.
  * For more details take a look at the Java Libraries chapter in the Gradle
- * user guide available at https://docs.gradle.org/5.0/userguide/java_library_plugin.html
+ * user guide available at https://docs.gradle.org/6.0/userguide/java_library_plugin.html
  */
 
 plugins {
     val kotlinVersion = "1.3.21"
-    id("org.springframework.boot") version "2.1.2.RELEASE"
+    id("org.springframework.boot") version "2.2.4.RELEASE"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.jpa") version kotlinVersion
@@ -37,7 +37,6 @@ dependencies {
     testImplementation("io.cucumber:cucumber-junit:${cucumberVersion}")
     testImplementation("io.cucumber:cucumber-java:${cucumberVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
-    //testRuntimeOnly("org.junit.jupiter:junit-vintage-engine")
 }
 
 configure<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension> {
@@ -45,4 +44,10 @@ configure<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtensio
         mavenBom("org.keycloak.bom:keycloak-adapter-bom:8.0.2")
     }
 }
+
+springBoot {
+    mainClassName = "ticket.TicketApplication"
+}
+
+
 
