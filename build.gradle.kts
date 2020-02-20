@@ -49,4 +49,3 @@ configure<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtensio
 springBoot {
     mainClassName = "ticket.TicketApplication"
 }
-q
