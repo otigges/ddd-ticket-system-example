@@ -8,3 +8,6 @@ out
 # IDEA
 .idea
 *.iml
+
+#Ignore local store
+ticket-store.bak

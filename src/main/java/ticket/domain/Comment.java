@@ -2,8 +2,10 @@ package ticket.domain;
 
 import stereotypes.ValueObject;
 
+import java.io.Serializable;
+
 @ValueObject
-public class Comment {
+public class Comment implements Serializable {
 
     private final String content;
 

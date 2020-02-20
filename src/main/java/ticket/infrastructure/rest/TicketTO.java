@@ -9,16 +9,29 @@ import java.util.Set;
 
 public class TicketTO {
 
-    private final List<Attachment> attachments = new ArrayList<>();
-    private final List<Comment> comments = new ArrayList<>();
-    private final Set<String> watchers = new HashSet<>();
-
     private String id;
     private String reporter;
     private String status;
     private String title;
     private String description;
     private String assignee;
+
+    private final List<Attachment> attachments = new ArrayList<>();
+    private final List<Comment> comments = new ArrayList<>();
+    private final Set<String> watchers = new HashSet<>();
+
+    public static TicketTO from (Ticket ticket) {
+        TicketTO to = new TicketTO(ticket.getId(), ticket.getReporter(), ticket.getStatus());
+        to.setTitle(ticket.getTitle());
+        to.setDescription(ticket.getDescription());
+        if (ticket.getAssignee() != null) {
+            to.setAssignee(ticket.getAssignee().toString());
+        }
+        for (UserID watcher : ticket.getWatchers()) {
+            to.addWatcher(watcher.toString());
+        }
+        return to;
+    }
 
     public TicketTO(TicketID id, UserID reporter, Status status) {
         this.id = id.toString();

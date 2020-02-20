@@ -85,6 +85,23 @@ public class TicketRestEndpoint {
             value = "/tickets",
             method = RequestMethod.POST
     )
+    public ResponseEntity<?> createTicket(TicketCreateRequestTO tcr, UriComponentsBuilder b) {
+        UserID reporter = new UserID(tcr.getReporter());
+        Ticket ticket = ticketService.createTicket(
+                reporter, tcr.getTitle(), tcr.getDescription());
+        ticket.watch(reporter);
+        UriComponents uriComponents =
+                b.path("/tickets/{id}").buildAndExpand(ticket.getId());
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setLocation(uriComponents.toUri());
+        return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
+    }
+
+    @RequestMapping(
+            value = "/tickets/sample",
+            method = RequestMethod.POST
+    )
     public ResponseEntity<?> createSampleTicket(UriComponentsBuilder b) {
         Ticket ticket = ticketService.createTicket(JANE, "Something is wrong.", "Some details.");
         ticket.watch(JANE);
@@ -97,7 +114,7 @@ public class TicketRestEndpoint {
     }
 
     private Document<?> toDoc(Ticket ticket) {
-        Document<TicketTO> doc = new Document<>(map(ticket));
+        Document<TicketTO> doc = new Document<>(TicketTO.from(ticket));
         String basePath = BASE_URI + "tickets/" + ticket.getId();
 
         doc.addLink(Link.self(basePath).addMethods("GET", "PUT", "DELETE"));
@@ -127,18 +144,7 @@ public class TicketRestEndpoint {
         return doc;
     }
 
-    private TicketTO map(Ticket ticket) {
-        TicketTO to = new TicketTO(ticket.getId(), ticket.getReporter(), ticket.getStatus());
-        to.setTitle(ticket.getTitle());
-        to.setDescription(ticket.getDescription());
-        if (ticket.getAssignee() != null) {
-            to.setAssignee(ticket.getAssignee().toString());
-        }
-        for (UserID watcher : ticket.getWatchers()) {
-            to.addWatcher(watcher.toString());
-        }
-        return to;
-    }
+
 
 
 

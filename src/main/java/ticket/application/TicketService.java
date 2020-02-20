@@ -3,7 +3,6 @@ package ticket.application;
 import org.springframework.stereotype.Service;
 import ticket.domain.*;
 
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 

@@ -38,4 +38,5 @@ public class InMemoryTicketRepository implements TicketRepository {
     public void clear() {
         storage.clear();
     }
+
 }

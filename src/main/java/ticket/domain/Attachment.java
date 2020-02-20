@@ -2,8 +2,10 @@ package ticket.domain;
 
 import stereotypes.ValueObject;
 
+import java.io.Serializable;
+
 @ValueObject
-public class Attachment {
+public class Attachment implements Serializable {
 
     private final UserID author;
 

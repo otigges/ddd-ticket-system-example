@@ -1,9 +1,10 @@
 package ticket.domain;
 
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
-public class UserID {
+public class UserID implements Serializable {
 
     private final String id;
 
@@ -32,4 +33,5 @@ public class UserID {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }

@@ -2,10 +2,11 @@ package ticket.domain;
 
 import stereotypes.ValueObject;
 
+import java.io.Serializable;
 import java.util.Objects;
 
 @ValueObject
-public class TicketID {
+public class TicketID implements Serializable {
 
     private final int id;
 
@@ -30,4 +31,5 @@ public class TicketID {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }

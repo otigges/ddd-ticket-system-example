@@ -1,6 +1,9 @@
 package ticket.demo;
 
-import ticket.domain.*;
+import ticket.domain.Action;
+import ticket.domain.IllegalStateTransitionException;
+import ticket.domain.Ticket;
+import ticket.domain.UserID;
 
 public class ClientDemo {
 

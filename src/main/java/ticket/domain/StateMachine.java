@@ -1,13 +1,14 @@
 package ticket.domain;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class StateMachine {
+public class StateMachine implements Serializable {
 
-    private final List<Transition> transitions = new ArrayList<>();
+    private static final List<Transition> transitions = new ArrayList<>();
     {
         transitions.add(new Transition(Status.NEW, Action.START_PROGRESS, Status.IN_PROGRESS));
         transitions.add(new Transition(Status.IN_PROGRESS, Action.RESOLVE, Status.RESOLVED));

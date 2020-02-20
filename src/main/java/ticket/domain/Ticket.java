@@ -3,13 +3,14 @@ package ticket.domain;
 import stereotypes.Aggregate;
 import stereotypes.AggregateId;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 @Aggregate
-public class Ticket {
+public class Ticket implements Serializable {
 
     private final List<Attachment> attachments = new ArrayList<>();
     private final List<Comment> comments = new ArrayList<>();
@@ -18,7 +19,8 @@ public class Ticket {
     @AggregateId
     private final TicketID id;
 
-    private final DomainEventPublisher publisher;
+
+    private transient final DomainEventPublisher publisher;
     private final StateMachine stateMachine;
     private final UserID reporter;
     private String title;

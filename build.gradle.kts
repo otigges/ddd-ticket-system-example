@@ -48,5 +48,9 @@ configure<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtensio
 
 springBoot {
     mainClassName = "ticket.TicketApplication"
-    
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
 }

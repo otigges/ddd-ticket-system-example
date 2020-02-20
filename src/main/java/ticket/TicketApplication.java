@@ -1,6 +1,5 @@
 package ticket;
 
-import org.keycloak.adapters.KeycloakConfigResolver;
 import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -8,7 +7,7 @@ import org.springframework.context.annotation.Bean;
 import ticket.domain.TicketFactory;
 import ticket.domain.TicketID;
 import ticket.domain.TicketRepository;
-import ticket.infrastructure.persistence.InMemoryTicketRepository;
+import ticket.infrastructure.persistence.FileTicketRepository;
 
 @SpringBootApplication
 public class TicketApplication {
@@ -28,7 +27,7 @@ public class TicketApplication {
 
     @Bean
     public TicketRepository ticketRepository() {
-        return new InMemoryTicketRepository();
+        return new FileTicketRepository();
     }
 
     @Bean
