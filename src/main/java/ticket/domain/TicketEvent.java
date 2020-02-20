@@ -1,8 +1,12 @@
 package ticket.domain;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
+import java.time.temporal.TemporalUnit;
 
 public abstract class TicketEvent {
+
+    private final TicketID ticketID;
 
     private final String type;
 
@@ -10,14 +14,19 @@ public abstract class TicketEvent {
 
     private final LocalDateTime timestamp;
 
-    public TicketEvent(String type, String payload, LocalDateTime timestamp) {
+    public TicketEvent(TicketID ticketID, String type, String payload, LocalDateTime timestamp) {
+        this.ticketID = ticketID;
         this.type = type;
         this.payload = payload;
         this.timestamp = timestamp;
     }
 
-    public TicketEvent(String type, String payload) {
-        this(type, payload, LocalDateTime.now());
+    public TicketEvent(TicketID ticketID, String type, String payload) {
+        this(ticketID, type, payload, LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
+    }
+
+    public TicketID getTicketID() {
+        return ticketID;
     }
 
     public String getType() {
@@ -32,10 +41,12 @@ public abstract class TicketEvent {
         return timestamp;
     }
 
+
     @Override
     public String toString() {
         return "TicketEvent['" + type +
-                "' @" + timestamp +
+                "' #" + ticketID +
+                " @" + timestamp +
                 ", payload='" + payload + '\'' +
                 ']';
     }

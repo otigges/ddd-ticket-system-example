@@ -9,11 +9,11 @@ public class TicketClosed extends TicketEvent {
 
     public static final String TYPE = "TicketClosed";
 
-    public TicketClosed(String payload, LocalDateTime timestamp) {
-        super(TYPE, payload, timestamp);
+    public TicketClosed(TicketID id, String payload, LocalDateTime timestamp) {
+        super(id, TYPE, payload, timestamp);
     }
 
-    public TicketClosed(String payload) {
-        super(TYPE, payload);
+    public TicketClosed(TicketID id, String payload) {
+        super(id, TYPE, payload);
     }
 }

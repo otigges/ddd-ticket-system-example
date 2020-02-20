@@ -1,9 +1,6 @@
 package ticket.demo;
 
-import ticket.domain.Action;
-import ticket.domain.IllegalStateTransitionException;
-import ticket.domain.Ticket;
-import ticket.domain.UserID;
+import ticket.domain.*;
 
 public class ClientDemo {
 
@@ -14,25 +11,34 @@ public class ClientDemo {
 
         // Jane creates new ticket
 
-        Ticket ticket = new DemoFactory().createNewTicket(JANE, "Wrong price calculation", "...");
+        Ticket ticket = new DemoFactory()
+                .createNewTicket(JANE, "Wrong price calculation", "...");
         ticket.watch(JANE);
         ticket.assignTo(BOB);
 
-        System.out.println(ticket);
+        info(ticket);
 
         // Bob analyzes ticket
 
-        ticket.apply(Action.START_PROGRESS);
         ticket.watch(BOB);
+        ticket.apply(Action.START_PROGRESS);
         ticket.addComment("Could reproduce and detected that...", BOB);
+        ticket.addAttachment(new Attachment(BOB, "http://cms.example.com/4711", "Stacktrace"));
+
+        info(ticket);
 
         // Bob solves ticket
-        ticket.updateDescription("Root of problem is....");
+        ticket.updateDescription("Wrong price calculation has root cause ....");
         ticket.apply(Action.RESOLVE);
         ticket.apply(Action.CLOSE);
+        ticket.unwatch(BOB);
 
-        System.out.println(ticket);
+        info(ticket);
 
+    }
+
+    private static void info(Object msg) {
+        System.out.println(msg);
     }
 
 }

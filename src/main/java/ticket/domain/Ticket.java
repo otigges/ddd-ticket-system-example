@@ -118,22 +118,30 @@ public class Ticket implements Serializable {
     }
 
     private void ticketChanged() {
-        publisher.publish(new TicketChanged("Ticket has been changed."));
+        publisher.publish(new TicketChanged(id, "Ticket has changed."));
     }
 
     private void ticketClosed() {
-        publisher.publish(new TicketClosed("Ticket has been closed."));
+        publisher.publish(new TicketClosed(id, "Ticket has been closed."));
     }
 
     @Override
     public String toString() {
-        return "Ticket '" + title + '\'' +
-                "\n\t description='" + description + '\'' +
-                "\n\t reporter=" + reporter +
-                "\n\t assignee=" + assignee +
-                "\n\t stateMachine=" + stateMachine +
-                "\n\t attachments=" + attachments +
-                "\n\t comments=" + comments +
-                "\n\t watchers=" + watchers + "\n";
+        StringBuilder sb =  new StringBuilder().append("Ticket ")
+                .append('#').append(id)
+                .append(" '").append(title).append('\'')
+                .append("\n\t description='").append(description).append('\'')
+                .append("\n\t reporter=").append(reporter)
+                .append("\n\t assignee=").append(assignee)
+                .append("\n\t state=").append(stateMachine.getCurrentState())
+                .append("\n\t watchers=").append(watchers);
+        if (!comments.isEmpty()) {
+            sb .append("\n\t comments=").append(comments);
+        }
+        if (!attachments.isEmpty()) {
+            sb.append("\n\t attachments=").append(attachments);
+        }
+        sb.append("\n");
+        return sb.toString();
     }
 }

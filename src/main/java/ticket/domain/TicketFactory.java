@@ -16,7 +16,7 @@ public class TicketFactory {
                 .withDescription(description)
                 .build();
         ticket.watch(reporter);
-        publisher.publish(new TicketCreated("Created new ticket."));
+        publisher.publish(new TicketCreated(ticket.getId(), "Created new ticket."));
         return ticket;
     }
 
