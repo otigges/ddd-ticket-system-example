@@ -8,6 +8,7 @@
 
 plugins {
     val kotlinVersion = "1.3.21"
+    idea
     id("org.springframework.boot") version "2.2.4.RELEASE"
     id("org.jetbrains.kotlin.jvm") version kotlinVersion
     id("org.jetbrains.kotlin.plugin.spring") version kotlinVersion
@@ -16,8 +17,6 @@ plugins {
 }
 
 repositories {
-    // Use jcenter for resolving your dependencies.
-    // You can declare any Maven/Ivy/file repository here.
     jcenter()
 }
 
@@ -30,6 +29,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-reflect")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.keycloak:keycloak-spring-boot-starter")
+    implementation("org.springframework.boot:spring-boot-devtools")
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(module = "junit")
     }
@@ -37,6 +37,7 @@ dependencies {
     testImplementation("io.cucumber:cucumber-junit:${cucumberVersion}")
     testImplementation("io.cucumber:cucumber-java:${cucumberVersion}")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+
 }
 
 configure<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension> {
@@ -48,6 +49,4 @@ configure<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtensio
 springBoot {
     mainClassName = "ticket.TicketApplication"
 }
-
-
-
+q
