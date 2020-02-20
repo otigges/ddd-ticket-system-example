@@ -3,6 +3,7 @@ package ticket.infrastructure.rest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponents;
@@ -11,6 +12,7 @@ import ticket.application.TicketService;
 import ticket.domain.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 import java.util.List;
 import java.util.Optional;
 
@@ -38,7 +40,7 @@ public class TicketRestEndpoint {
         document.addLink(new Link(BASE_URI + "tickets", "tickets").addMethods("GET", "POST"));
         document.addLink(new Link(ACTUATOR_URI + "info", "info"));
         document.addLink(new Link(ACTUATOR_URI + "health", "health"));
-        return new ResponseEntity(document, HttpStatus.OK);
+        return new ResponseEntity<>(document, HttpStatus.OK);
     }
 
     @GetMapping("/tickets")
@@ -59,9 +61,27 @@ public class TicketRestEndpoint {
         return ResponseEntity.of(ticket.map(this::toWatchersDoc));
     }
 
-    @RequestMapping(
-            value = "/tickets/{id}/{action}",
-            method = RequestMethod.POST)
+    @PostMapping(
+        value = "/tickets",
+        consumes = { MediaType.APPLICATION_JSON_VALUE }
+    )
+    public ResponseEntity<?> createTicket(@Valid @RequestBody TicketCreateRequestTO tcr, UriComponentsBuilder b) {
+        UserID reporter = new UserID(tcr.getReporter());
+        Ticket ticket = ticketService.createTicket(reporter, tcr.getTitle(), tcr.getDescription());
+        ticket.watch(reporter);
+        ticketService.update(ticket);
+        return responseTicketCreated(b, ticket);
+    }
+
+    @PostMapping("/tickets/sample")
+    public ResponseEntity<?> createSampleTicket(UriComponentsBuilder b) {
+        Ticket ticket = ticketService.createTicket(JANE, "This is a sample ticket.", "Some details.");
+        ticket.watch(JANE);
+        ticketService.update(ticket);
+        return responseTicketCreated(b, ticket);
+    }
+
+    @PostMapping("/tickets/{id}/{action}")
     public ResponseEntity<?> perform(@PathVariable(value="id") int id, @PathVariable(value="action") String actionName) {
         Optional<Ticket> optional = ticketService.findTicket(new TicketID(id));
         if (optional.isPresent()) {
@@ -81,30 +101,9 @@ public class TicketRestEndpoint {
         }
     }
 
-    @RequestMapping(
-            value = "/tickets",
-            method = RequestMethod.POST
-    )
-    public ResponseEntity<?> createTicket(TicketCreateRequestTO tcr, UriComponentsBuilder b) {
-        UserID reporter = new UserID(tcr.getReporter());
-        Ticket ticket = ticketService.createTicket(
-                reporter, tcr.getTitle(), tcr.getDescription());
-        ticket.watch(reporter);
-        UriComponents uriComponents =
-                b.path("/tickets/{id}").buildAndExpand(ticket.getId());
+    // -- internal
 
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(uriComponents.toUri());
-        return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
-    }
-
-    @RequestMapping(
-            value = "/tickets/sample",
-            method = RequestMethod.POST
-    )
-    public ResponseEntity<?> createSampleTicket(UriComponentsBuilder b) {
-        Ticket ticket = ticketService.createTicket(JANE, "Something is wrong.", "Some details.");
-        ticket.watch(JANE);
+    private ResponseEntity<?> responseTicketCreated(UriComponentsBuilder b, Ticket ticket) {
         UriComponents uriComponents =
                 b.path("/tickets/{id}").buildAndExpand(ticket.getId());
 

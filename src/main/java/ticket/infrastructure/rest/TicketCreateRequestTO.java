@@ -1,8 +1,12 @@
 package ticket.infrastructure.rest;
 
+import javax.validation.constraints.NotBlank;
+
 public class TicketCreateRequestTO {
 
+    @NotBlank
     private String reporter;
+    @NotBlank
     private String title;
     private String description;
 

@@ -32,4 +32,7 @@ public class TicketID implements Serializable {
         return Objects.hash(id);
     }
 
+    public int getInternalId() {
+        return id;
+    }
 }

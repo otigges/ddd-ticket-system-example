@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface TicketRepository {
+public interface TicketRepository extends TicketIdGenerator {
 
     Optional<Ticket> get(TicketID id);
 

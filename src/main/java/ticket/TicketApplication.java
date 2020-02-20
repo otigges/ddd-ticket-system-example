@@ -12,7 +12,7 @@ import ticket.infrastructure.persistence.FileTicketRepository;
 @SpringBootApplication
 public class TicketApplication {
 
-    private static int ticketIdGen = 1;
+    private TicketRepository repo = new FileTicketRepository();
 
     public static void main(String[] args) {
         SpringApplication.run(TicketApplication.class, args);
@@ -22,12 +22,12 @@ public class TicketApplication {
     public TicketFactory ticketFactory() {
         return new TicketFactory(
                 event -> System.out.println(event + "\n"),
-                () -> new TicketID(ticketIdGen++));
+                repo);
     }
 
     @Bean
     public TicketRepository ticketRepository() {
-        return new FileTicketRepository();
+        return repo;
     }
 
     @Bean

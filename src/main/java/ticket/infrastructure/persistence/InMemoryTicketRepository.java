@@ -13,6 +13,8 @@ import java.util.stream.Collectors;
 
 public class InMemoryTicketRepository implements TicketRepository {
 
+    private int nextId = 1;
+
     private final Map<TicketID, Ticket> storage = new HashMap<>();
 
     @Override
@@ -39,4 +41,8 @@ public class InMemoryTicketRepository implements TicketRepository {
         storage.clear();
     }
 
+    @Override
+    public TicketID next() {
+        return new TicketID(nextId++);
+    }
 }

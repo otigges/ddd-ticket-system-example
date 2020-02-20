@@ -1,9 +1,6 @@
 package ticket.infrastructure.persistence;
 
-import ticket.domain.SearchCriteria;
-import ticket.domain.Ticket;
-import ticket.domain.TicketID;
-import ticket.domain.TicketRepository;
+import ticket.domain.*;
 
 import java.io.*;
 import java.util.HashMap;
@@ -14,6 +11,8 @@ import java.util.stream.Collectors;
 
 public class FileTicketRepository implements TicketRepository {
 
+    private int nextId;
+
     private final Map<TicketID, Ticket> storage = new HashMap<>();
 
     private final File file;
@@ -21,6 +20,7 @@ public class FileTicketRepository implements TicketRepository {
     public FileTicketRepository() {
         this.file = new File("ticket-store.bak");
         load(file);
+        nextId = highestId() +1;
     }
 
     @Override
@@ -44,9 +44,21 @@ public class FileTicketRepository implements TicketRepository {
         store(file);
     }
 
+    @Override
+    public TicketID next() {
+        return new TicketID(nextId++);
+    }
+
     public void clear() {
         storage.clear();
         file.delete();
+    }
+
+    private int highestId() {
+        return storage.values().stream()
+                .map(t -> t.getId().getInternalId())
+                .max((a,b) -> a.compareTo(b))
+                .orElse(0);
     }
 
     // internals - load and store to disk
