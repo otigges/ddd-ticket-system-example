@@ -14,6 +14,10 @@ public class Link {
 
     private final Set<String> methods = new HashSet<>();
 
+    public static Link self(String target) {
+        return new Link(target, "self");
+    }
+
     public Link(String target, String rel) {
         this.target = target;
         this.rel = rel;

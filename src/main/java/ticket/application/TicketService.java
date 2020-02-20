@@ -3,6 +3,8 @@ package ticket.application;
 import org.springframework.stereotype.Service;
 import ticket.domain.*;
 
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -25,6 +27,10 @@ public class TicketService {
 
     public Optional<Ticket> findTicket(TicketID id) {
         return repository.get(id);
+    }
+
+    public List<Ticket> searchTicket(SearchCriteria criteria) {
+        return repository.search(criteria);
     }
 
     public void update(Ticket ticket) {

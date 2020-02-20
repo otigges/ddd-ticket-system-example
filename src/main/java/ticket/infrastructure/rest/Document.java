@@ -18,6 +18,10 @@ public class Document<T> {
         this.entity = entity;
     }
 
+    protected Document() {
+        this(null);
+    }
+
     public void addLink(Link link) {
         this.links.add(link);
     }

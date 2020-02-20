@@ -1,12 +1,15 @@
 package ticket.infrastructure.persistence;
 
+import ticket.domain.SearchCriteria;
 import ticket.domain.Ticket;
 import ticket.domain.TicketID;
 import ticket.domain.TicketRepository;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class InMemoryTicketRepository implements TicketRepository {
 
@@ -15,6 +18,11 @@ public class InMemoryTicketRepository implements TicketRepository {
     @Override
     public Optional<Ticket> get(TicketID id) {
         return Optional.ofNullable(storage.get(id));
+    }
+
+    @Override
+    public List<Ticket> search(SearchCriteria criteria) {
+        return storage.values().stream().filter(criteria).collect(Collectors.toList());
     }
 
     @Override

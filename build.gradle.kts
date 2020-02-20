@@ -23,13 +23,13 @@ repositories {
 dependencies {
     val cucumberVersion = "4.7.4"
     implementation("org.springframework.boot:spring-boot-starter-web")
-    implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    implementation("com.h2database:h2")
+    implementation("org.springframework.boot:spring-boot-starter-actuator")
+    //implementation("org.springframework.boot:spring-boot-starter-data-jpa")
+    //implementation("com.h2database:h2")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
-    implementation("org.jetbrains.kotlin:kotlin-reflect")
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
     implementation("org.keycloak:keycloak-spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-devtools")
+
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(module = "junit")
     }
@@ -48,4 +48,5 @@ configure<io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtensio
 
 springBoot {
     mainClassName = "ticket.TicketApplication"
+    
 }

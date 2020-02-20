@@ -1,4 +1,15 @@
 
+info:
+  app:
+    name : Ticket-System
+    version : 1.0.0
+
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"
+
 keycloak:
   enabled: ${KEYCLOAK_ENABLED:false}
   realm: ${KEYCLOAK_REALM:ticket-system}

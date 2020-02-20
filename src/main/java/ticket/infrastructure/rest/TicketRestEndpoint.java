@@ -11,15 +11,17 @@ import ticket.application.TicketService;
 import ticket.domain.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 import java.util.Optional;
 
 @RestController
 public class TicketRestEndpoint {
 
-
     public static final UserID JANE = new UserID("Jane");
 
-    public static final String BASE_URI = "http://localhost:8080/tickets/";
+    public static final String BASE_URI = "http://localhost:8080/";
+
+    public static final String ACTUATOR_URI = BASE_URI + "actuator/";
 
     private TicketService ticketService;
 
@@ -28,21 +30,30 @@ public class TicketRestEndpoint {
         this.ticketService = ticketService;
     }
 
-    @GetMapping("/tickets")
+    @GetMapping("/")
     public ResponseEntity<?>  getServiceDocument(HttpServletRequest request) {
         ServiceInfo info = new ServiceInfo(request);
 
         Document<ServiceInfo> document = new Document<>(info);
+        document.addLink(new Link(BASE_URI + "tickets", "tickets").addMethods("GET", "POST"));
+        document.addLink(new Link(ACTUATOR_URI + "info", "info"));
+        document.addLink(new Link(ACTUATOR_URI + "health", "health"));
         return new ResponseEntity(document, HttpStatus.OK);
     }
 
-    @RequestMapping("/tickets/{id}")
+    @GetMapping("/tickets")
+    public ResponseEntity<?>  getTickets() {
+        List<Ticket> tickets = ticketService.searchTicket(SearchCriteria.any());
+        return new ResponseEntity<>(new TicketsSearchResultTO(tickets), HttpStatus.OK);
+    }
+
+    @GetMapping("/tickets/{id}")
     public ResponseEntity<?>  getTicket(@PathVariable(value="id") int id) {
         Optional<Ticket> ticket = ticketService.findTicket(new TicketID(id));
         return ResponseEntity.of(ticket.map(this::toDoc));
     }
 
-    @RequestMapping("/tickets/{id}/watchers")
+    @GetMapping("/tickets/{id}/watchers")
     public ResponseEntity<?>  getTicketWatchers(@PathVariable(value="id") int id) {
         Optional<Ticket> ticket = ticketService.findTicket(new TicketID(id));
         return ResponseEntity.of(ticket.map(this::toWatchersDoc));
@@ -87,21 +98,22 @@ public class TicketRestEndpoint {
 
     private Document<?> toDoc(Ticket ticket) {
         Document<TicketTO> doc = new Document<>(map(ticket));
-        String basePath = BASE_URI + ticket.getId() + "/";
-        for (Action action : ticket.getAllowedActions()) {
+        String basePath = BASE_URI + "tickets/" + ticket.getId();
 
+        doc.addLink(Link.self(basePath).addMethods("GET", "PUT", "DELETE"));
+        for (Action action : ticket.getAllowedActions()) {
             String actionName = action.toString().toLowerCase();
-            doc.addLink(new Link(basePath + actionName, actionName).addMethods("POST"));
+            doc.addLink(new Link(basePath + "/" + actionName, actionName).addMethods("POST"));
         }
-        doc.addLink(new Link(basePath + "watchers", "watchers").addMethods("GET", "POST"));
-        doc.addLink(new Link(basePath + "assign", "assign").addMethods("POST"));
-        doc.addLink(new Link(basePath + "attachments", "attach_file").addMethods("GET", "POST"));
-        doc.addLink(new Link(basePath + "comments", "add_comment").addMethods("GET", "POST"));
+        doc.addLink(new Link(basePath + "/watchers", "watchers").addMethods("GET", "POST"));
+        doc.addLink(new Link(basePath + "/assign", "assign").addMethods("POST"));
+        doc.addLink(new Link(basePath + "/attachments", "attach_file").addMethods("GET", "POST"));
+        doc.addLink(new Link(basePath + "/comments", "add_comment").addMethods("GET", "POST"));
         return doc;
     }
 
     private Document<WatcherListTO> toWatchersDoc(Ticket ticket) {
-        String basePath = BASE_URI + ticket.getId() + "/";
+        String basePath = BASE_URI + "tickets/" + ticket.getId() + "/";
         WatcherListTO list = new WatcherListTO();
         Document<WatcherListTO> doc = new Document<>(list);
         doc.addLink(new Link(basePath + "watchers", "add_watchers"));
