@@ -1,8 +1,11 @@
 # Ticket System Example
 
+![Java CI](https://github.com/otigges/ddd-ticket-system-example/workflows/Java%20CI/badge.svg)
+
 Example for Domain-driven Design, showing how to build technology free Internal Building Blocks with Java.
 
 Prerequisites:
+
     * JDK (8-13)
     * Optional: Keycloak
     
