@@ -5,5 +5,9 @@ public enum Action {
     RESOLVE,
     CLOSE,
     ARCHIVE,
-    REOPEN
+    REOPEN;
+
+    public static Action from(String name) {
+        return Action.valueOf(name.toUpperCase());
+    }
 }
