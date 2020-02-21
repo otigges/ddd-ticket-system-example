@@ -11,6 +11,10 @@ To build, test and run use gradle:
     ./gradlew build
     ./gradlew test
     ./gradlew bootRun
+    
+## API 
+
+Rest API is available at: http://localhost:8080/
 
 ## Use Keycloak for authentication
 

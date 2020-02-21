@@ -4,6 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAutoDetect;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonUnwrapped;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,8 +25,17 @@ public class Document<T> {
         this(null);
     }
 
-    public void addLink(Link link) {
+    public Link addLink(Link link) {
         this.links.add(link);
+        return link;
+    }
+
+    public Link addLink(URI target, String rel) {
+        return addLink(new Link(target, rel));
+    }
+
+    public Link selfLink(URI target) {
+        return addLink(Link.self(target));
     }
 
 }

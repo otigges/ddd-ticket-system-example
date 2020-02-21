@@ -1,6 +1,5 @@
 package ticket.infrastructure.rest;
 
-import org.jetbrains.annotations.NotNull;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -11,9 +10,10 @@ import ticket.domain.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
-import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+
+import static java.util.Collections.emptySet;
 
 @RestController
 public class TicketRestEndpoint {
@@ -33,39 +33,37 @@ public class TicketRestEndpoint {
     @GetMapping("/")
     public ResponseEntity<?>  getServiceDocument(HttpServletRequest request) {
         ServiceInfo info = new ServiceInfo(request);
-
         Document<ServiceInfo> document = new Document<>(info);
-        document.addLink(new Link(linkBuilder.linkToTicketSearch(), "tickets").addMethods("GET", "POST"));
-        document.addLink(new Link(linkBuilder.linkToInfoEndpoint(), "info"));
-        document.addLink(new Link(linkBuilder.linkToHealthEndpoint(), "health"));
-        return new ResponseEntity<>(document, HttpStatus.OK);
+        document.addLink(linkBuilder.linkToTicketSearch(), "tickets").addMethods("GET", "POST");
+        document.addLink(linkBuilder.linkToInfoEndpoint(), "info");
+        document.addLink(linkBuilder.linkToHealthEndpoint(), "health");
+        return ok(document);
     }
 
     @GetMapping("/tickets")
     public ResponseEntity<?> getTickets() {
         List<Ticket> tickets = ticketService.searchTicket(SearchCriteria.any());
         TicketsSearchResultTO result = new TicketsSearchResultTO(tickets, linkBuilder);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        return ok(result);
     }
 
     @GetMapping("/tickets/{id}")
-    public ResponseEntity<?>  getTicket(@PathVariable(value="id") int id) {
-        return ticketService.findTicket(new TicketID(id))
+    public ResponseEntity<?>  getTicket(@PathVariable(value="id") TicketID id) {
+        return ticketService.findTicket(id)
              .map(ticket -> {
                  Document<TicketTO> doc = new Document<>(TicketTO.from(ticket));
-                 doc.addLink(Link.self(linkBuilder.linkTo(ticket)).addMethods("GET", "PUT", "DELETE"));
+                 doc.selfLink(linkBuilder.linkTo(ticket)).addMethods("GET", "PUT", "DELETE");
 
-                 Set<Action> allowedActions = ticket.getAllowedActions();
-                 for (Action action : allowedActions) {
-                     doc.addLink(new Link(linkBuilder.linkToAction(ticket, action), action.toString().toLowerCase())
-                             .addMethods("POST"));
+                 for (Action action : ticket.getAllowedActions()) {
+                     doc.addLink(linkBuilder.linkToAction(ticket, action), action.name().toLowerCase())
+                             .addMethods("POST");
                  }
 
-                 doc.addLink(new Link(linkBuilder.linkToWatchers(ticket), "watchers").addMethods("GET", "POST"));
-                 doc.addLink(new Link(linkBuilder.linkToAssign(ticket), "assign").addMethods("POST"));
-                 doc.addLink(new Link(linkBuilder.linkToAttachments(ticket), "attachments").addMethods("GET", "POST"));
-                 doc.addLink(new Link(linkBuilder.linkToComments(ticket), "comments").addMethods("GET", "POST"));
-                 return new ResponseEntity<>(doc, HttpStatus.OK);
+                 doc.addLink(linkBuilder.linkToWatchers(ticket), "watchers").addMethods("GET", "POST");
+                 doc.addLink(linkBuilder.linkToAssign(ticket), "assign").addMethods("POST");
+                 doc.addLink(linkBuilder.linkToAttachments(ticket), "attachments").addMethods("GET", "POST");
+                 doc.addLink(linkBuilder.linkToComments(ticket), "comments").addMethods("GET", "POST");
+                 return ok(doc);
             })
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
 
@@ -87,13 +85,13 @@ public class TicketRestEndpoint {
     }
 
     @PostMapping("/tickets/{id}/{action}")
-    public ResponseEntity<?> perform(@PathVariable(value="id") int id, @PathVariable(value="action") String actionName) {
-        return ticketService.findTicket(new TicketID(id))
+    public ResponseEntity<?> perform(@PathVariable(value="id") TicketID id, @PathVariable(value="action") String actionName) {
+        return ticketService.findTicket(id)
                 .map(ticket -> {
                     try {
                         ticket.apply(Action.from(actionName));
                         ticketService.update(ticket);
-                        return new ResponseEntity<>(HttpStatus.OK);
+                        return ok();
                     } catch (IllegalStateTransitionException e) {
                         return new ResponseEntity<>("Action " + actionName
                                 + " is not allowed. Allowed actions are: " + ticket.getAllowedActions(),
@@ -104,28 +102,27 @@ public class TicketRestEndpoint {
     }
 
     @GetMapping("/tickets/{id}/watchers")
-    public ResponseEntity<?>  getTicketWatchers(@PathVariable(value="id") int id) {
-        return ticketService.findTicket(new TicketID(id))
+    public ResponseEntity<?>  getTicketWatchers(@PathVariable(value="id") TicketID id) {
+        return ticketService.findTicket(id)
                 .map(ticket -> {
                     Document<WatcherListTO> doc = new Document<>(WatcherListTO.from(ticket, linkBuilder));
-                    doc.addLink(new Link(linkBuilder.linkToWatchers(ticket), "add_watchers"));
-                    return new ResponseEntity<>(doc, HttpStatus.OK);
+                    doc.addLink(linkBuilder.linkToWatchers(ticket), "add_watchers");
+                    return ok(doc);
                 })
                 .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/tickets/{ticketId}/watchers/{watcherId}")
     public ResponseEntity<?>  getTicketWatcher(
-            @PathVariable(value="ticketId") int ticketId,
-            @PathVariable(value="watcherId") String watcherName) {
-        Set<UserID> watchers = ticketService.findTicket(new TicketID(ticketId))
-                .map(Ticket::getWatchers).orElse(Collections.emptySet());
-        UserID watcherId = new UserID(watcherName);
-        if (watchers.contains(watcherId)) {
-            Link selfLink = Link.self(linkBuilder.linkToWatcher(new TicketID(ticketId), watcherId))
+            @PathVariable(value="ticketId") TicketID ticketId,
+            @PathVariable(value="watcherId") UserID watcher) {
+        Set<UserID> watchers = ticketService.findTicket(ticketId)
+                .map(Ticket::getWatchers).orElse(emptySet());
+        if (watchers.contains(watcher)) {
+            Link selfLink = Link.self(linkBuilder.linkToWatcher(ticketId, watcher))
                     .addMethods("GET", "PUT", "DELETE");
-            Document<WatcherTO> doc = new Document<>(new WatcherTO(watcherName, selfLink));
-            return new ResponseEntity<>(doc, HttpStatus.OK);
+            WatcherTO watcherTO = new WatcherTO(watcher, selfLink);
+            return ok(new Document<>(watcherTO));
         } else {
             return new ResponseEntity<>(HttpStatus.NOT_FOUND);
         }
@@ -133,11 +130,11 @@ public class TicketRestEndpoint {
 
     @PutMapping("/tickets/{ticketId}/watchers/{watcherId}")
     public ResponseEntity<?> putTicketWatcher(
-            @PathVariable(value="ticketId") int ticketId,
-            @PathVariable(value="watcherId") String watcherId) {
-        return ticketService.findTicket(new TicketID(ticketId))
+            @PathVariable(value="ticketId") TicketID ticketId,
+            @PathVariable(value="watcherId") UserID watcher) {
+        return ticketService.findTicket(ticketId)
                 .map(t -> {
-                    t.watch(new UserID(watcherId));
+                    t.watch(watcher);
                     ticketService.update(t);
                     return ok();
                 })
@@ -148,11 +145,11 @@ public class TicketRestEndpoint {
 
     @DeleteMapping("/tickets/{ticketId}/watchers/{watcherId}")
     public ResponseEntity<?>  removeTicketWatcher(
-            @PathVariable(value="ticketId") int ticketId,
-            @PathVariable(value="watcherId") String watcherId) {
-        return ticketService.findTicket(new TicketID(ticketId))
+            @PathVariable(value="ticketId") TicketID ticketId,
+            @PathVariable(value="watcherId") UserID watcher) {
+        return ticketService.findTicket(ticketId)
                 .map(t -> {
-                    t.unwatch(new UserID(watcherId));
+                    t.unwatch(watcher);
                     ticketService.update(t);
                     return ok();
                 })
@@ -167,7 +164,10 @@ public class TicketRestEndpoint {
         return new ResponseEntity<Void>(headers, HttpStatus.CREATED);
     }
 
-    @NotNull
+    private <T> ResponseEntity<T> ok(T entity) {
+        return new ResponseEntity<>(entity, HttpStatus.OK);
+    }
+
     private ResponseEntity<Void> ok() {
         return new ResponseEntity<>(HttpStatus.OK);
     }
