@@ -8,19 +8,15 @@ import org.springframework.web.bind.annotation.*;
 import ticket.application.TicketService;
 import ticket.domain.*;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.validation.Valid;
 import java.util.List;
-import java.util.Set;
-
-import static java.util.Collections.emptySet;
 
 @RestController
 public class TicketRestEndpoint {
 
-    private LinkBuilder linkBuilder;
-
     private TicketService ticketService;
+
+    private LinkBuilder linkBuilder;
 
     @Autowired
     public TicketRestEndpoint(TicketService ticketService, LinkBuilder linkBuilder) {
@@ -30,44 +26,18 @@ public class TicketRestEndpoint {
 
     // -- API
 
-    @GetMapping("/")
-    public ResponseEntity<?>  getServiceDocument(HttpServletRequest request) {
-        ServiceInfo info = new ServiceInfo(request);
-        Document<ServiceInfo> document = new Document<>(info);
-        document.addLink(linkBuilder.linkToTicketSearch(), "tickets").addMethods("GET", "POST");
-        document.addLink(linkBuilder.linkToInfoEndpoint(), "info");
-        document.addLink(linkBuilder.linkToHealthEndpoint(), "health");
-        return ok(document);
-    }
-
     @GetMapping("/tickets")
     public ResponseEntity<?> getTickets() {
         List<Ticket> tickets = ticketService.searchTicket(SearchCriteria.any());
-        TicketsSearchResultTO result = new TicketsSearchResultTO(tickets, linkBuilder);
+        TicketsSearchResultTO result = new TicketsSearchResultTO(tickets);
         return ok(result);
     }
 
     @GetMapping("/tickets/{id}")
     public ResponseEntity<?>  getTicket(@PathVariable(value="id") TicketID id) {
         return ticketService.findTicket(id)
-             .map(ticket -> {
-                 Document<TicketTO> doc = new Document<>(TicketTO.from(ticket));
-                 doc.selfLink(linkBuilder.linkTo(ticket)).addMethods("GET", "PUT", "DELETE");
-
-                 for (Action action : ticket.getAllowedActions()) {
-                     doc.addLink(linkBuilder.linkToAction(ticket, action), action.name().toLowerCase())
-                             .addMethods("POST");
-                 }
-
-                 doc.addLink(linkBuilder.linkToWatchers(ticket), "watchers").addMethods("GET", "POST");
-                 doc.addLink(linkBuilder.linkToAssign(ticket), "assign").addMethods("POST");
-                 doc.addLink(linkBuilder.linkToAttachments(ticket), "attachments").addMethods("GET", "POST");
-                 doc.addLink(linkBuilder.linkToComments(ticket), "comments").addMethods("GET", "POST");
-                 return ok(doc);
-            })
+             .map(ticket -> ok(TicketTO.from(ticket)))
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-
-
     }
 
     @PostMapping("/tickets")
@@ -84,76 +54,15 @@ public class TicketRestEndpoint {
         return responseTicketCreated(ticket);
     }
 
-    @PostMapping("/tickets/{id}/{action}")
-    public ResponseEntity<?> perform(@PathVariable(value="id") TicketID id, @PathVariable(value="action") String actionName) {
-        return ticketService.findTicket(id)
-                .map(ticket -> {
-                    try {
-                        ticket.apply(Action.from(actionName));
-                        ticketService.update(ticket);
-                        return ok();
-                    } catch (IllegalStateTransitionException e) {
-                        return new ResponseEntity<>("Action " + actionName
-                                + " is not allowed. Allowed actions are: " + ticket.getAllowedActions(),
-                                HttpStatus.CONFLICT);
-                    }
-                })
-                .orElse(notFound());
-    }
+    /* ##########   EXERCISE No. 1 ############
+     * Implement update of tickets:
+     * - Title and description may be changed
+     * - ID and reporter may not be changed
+     * - Only valid state transitions may be allowed
+     */
 
-    @GetMapping("/tickets/{id}/watchers")
-    public ResponseEntity<?>  getTicketWatchers(@PathVariable(value="id") TicketID id) {
-        return ticketService.findTicket(id)
-                .map(ticket -> {
-                    Document<WatcherListTO> doc = new Document<>(WatcherListTO.from(ticket, linkBuilder));
-                    doc.addLink(linkBuilder.linkToWatchers(ticket), "add_watchers");
-                    return ok(doc);
-                })
-                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
-    }
-
-    @GetMapping("/tickets/{ticketId}/watchers/{watcherId}")
-    public ResponseEntity<?>  getTicketWatcher(
-            @PathVariable(value="ticketId") TicketID ticketId,
-            @PathVariable(value="watcherId") UserID watcher) {
-        Set<UserID> watchers = ticketService.findTicket(ticketId)
-                .map(Ticket::getWatchers).orElse(emptySet());
-        if (watchers.contains(watcher)) {
-            Link selfLink = Link.self(linkBuilder.linkToWatcher(ticketId, watcher))
-                    .addMethods("GET", "PUT", "DELETE");
-            WatcherTO watcherTO = new WatcherTO(watcher, selfLink);
-            return ok(new Document<>(watcherTO));
-        } else {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
-    }
-
-    @PutMapping("/tickets/{ticketId}/watchers/{watcherId}")
-    public ResponseEntity<?> putTicketWatcher(
-            @PathVariable(value="ticketId") TicketID ticketId,
-            @PathVariable(value="watcherId") UserID watcher) {
-        return ticketService.findTicket(ticketId)
-                .map(t -> {
-                    t.watch(watcher);
-                    ticketService.update(t);
-                    return ok();
-                })
-                .orElse(notFound());
-    }
-
-
-
-    @DeleteMapping("/tickets/{ticketId}/watchers/{watcherId}")
-    public ResponseEntity<?>  removeTicketWatcher(
-            @PathVariable(value="ticketId") TicketID ticketId,
-            @PathVariable(value="watcherId") UserID watcher) {
-        return ticketService.findTicket(ticketId)
-                .map(t -> {
-                    t.unwatch(watcher);
-                    ticketService.update(t);
-                    return ok();
-                })
-                .orElse(notFound());
+    public ResponseEntity<?> updateTicket() {
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     // -- internal
