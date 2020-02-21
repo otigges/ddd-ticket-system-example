@@ -9,8 +9,8 @@ public class TicketsSearchResultTO extends Document<List<Ticket>> {
 
     private final List<TicketTO> tickets = new ArrayList<>();
 
-    public TicketsSearchResultTO(List<Ticket> tickets) {
-        tickets.forEach(t -> this.tickets.add(TicketTO.from(t)));
+    public TicketsSearchResultTO(List<Ticket> tickets, LinkBuilder linkBuilder) {
+        tickets.forEach(t -> this.tickets.add(TicketTO.from(t, linkBuilder)));
     }
 
 }

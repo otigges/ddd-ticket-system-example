@@ -1,0 +1,13 @@
+{
+  "properties": [
+    {
+      "name": "ticket-system",
+      "type": "java.lang.String",
+      "description": "Description for ticket-system."
+    },
+    {
+      "name": "ticket-system.api.base-uri",
+      "type": "java.lang.String",
+      "description": "Description for ticket-system.api.base-uri."
+    }
+  ] }

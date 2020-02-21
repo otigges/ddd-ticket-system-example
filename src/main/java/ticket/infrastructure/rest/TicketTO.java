@@ -1,7 +1,9 @@
 package ticket.infrastructure.rest;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import ticket.domain.*;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -16,11 +18,13 @@ public class TicketTO {
     private String description;
     private String assignee;
 
+    @JsonInclude(JsonInclude.Include.NON_EMPTY)
+    private final List<Link> links = new ArrayList<>();
     private final List<Attachment> attachments = new ArrayList<>();
     private final List<Comment> comments = new ArrayList<>();
     private final Set<String> watchers = new HashSet<>();
 
-    public static TicketTO from (Ticket ticket) {
+    public static TicketTO from(Ticket ticket) {
         TicketTO to = new TicketTO(ticket.getId(), ticket.getReporter(), ticket.getStatus());
         to.setTitle(ticket.getTitle());
         to.setDescription(ticket.getDescription());
@@ -30,6 +34,12 @@ public class TicketTO {
         for (UserID watcher : ticket.getWatchers()) {
             to.addWatcher(watcher.toString());
         }
+        return to;
+    }
+
+    public static TicketTO from(Ticket ticket, LinkBuilder linkBuilder) {
+        TicketTO to = TicketTO.from(ticket);
+        to.setSelfLink(linkBuilder.linkTo(ticket));
         return to;
     }
 
@@ -97,6 +107,14 @@ public class TicketTO {
 
     public void addWatcher(String watcher) {
         this.watchers.add(watcher);
+    }
+
+    public List<Link> getLinks() {
+        return links;
+    }
+
+    protected void setSelfLink(URI selfLink) {
+        this.links.add(Link.self(selfLink));
     }
 }
 

@@ -18,8 +18,11 @@ public class TicketService {
         this.repository = repository;
     }
 
-    public Ticket createTicket(UserID reporter, String title, String description) {
+    public Ticket createTicket(UserID reporter, String title, String description, UserID... watcher) {
         Ticket ticket = factory.createNewTicket(reporter, title, description);
+        for (UserID w : watcher) {
+            ticket.watch(w);
+        }
         repository.add(ticket);
         return ticket;
     }

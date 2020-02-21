@@ -1,4 +1,12 @@
 
+server:
+  port: 8080
+  address: localhost
+
+ticket-system:
+  api:
+    base-uri: http://${server.address}:${server.port}/
+
 info:
   app:
     name : Ticket-System

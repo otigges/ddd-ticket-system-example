@@ -2,6 +2,7 @@ package ticket.infrastructure.rest;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 
+import java.net.URI;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -18,9 +19,17 @@ public class Link {
         return new Link(target, "self");
     }
 
+    public static Link self(URI target) {
+        return self(target.toString());
+    }
+
     public Link(String target, String rel) {
         this.target = target;
         this.rel = rel;
+    }
+
+    public Link(URI target, String rel) {
+        this(target.toString(), rel);
     }
 
     public Link addMethods(String... methods) {
