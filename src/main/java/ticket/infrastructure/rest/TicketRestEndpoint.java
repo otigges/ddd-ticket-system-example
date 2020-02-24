@@ -10,6 +10,9 @@ import ticket.domain.*;
 
 import javax.validation.Valid;
 import java.util.List;
+import java.util.Set;
+
+import static java.util.Collections.emptySet;
 
 @RestController
 public class TicketRestEndpoint {
@@ -94,11 +97,65 @@ public class TicketRestEndpoint {
                 .orElse(notFound());
     }
 
-    /* ##########   EXERCISE No. 2 ############
-     * Users can watch tickets. Implement:
-     * - [optional: see the watchers of a given ticket]
-     * - add a watcher for a ticket
-     * - remove a watcher from a ticket
+    @GetMapping("/tickets/{id}/watchers")
+    public ResponseEntity<?>  getTicketWatchers(@PathVariable(value="id") TicketID id) {
+        return ticketService.findTicket(id)
+                .map(ticket -> {
+                    Document<WatcherListTO> doc = new Document<>(WatcherListTO.from(ticket, linkBuilder));
+                    doc.addLink(linkBuilder.linkToWatchers(ticket), "add_watchers");
+                    return ok(doc);
+                })
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
+
+    @GetMapping("/tickets/{ticketId}/watchers/{watcherId}")
+    public ResponseEntity<?>  getTicketWatcher(
+            @PathVariable(value="ticketId") TicketID ticketId,
+            @PathVariable(value="watcherId") UserID watcher) {
+        Set<UserID> watchers = ticketService.findTicket(ticketId)
+                .map(Ticket::getWatchers).orElse(emptySet());
+        if (watchers.contains(watcher)) {
+            Link selfLink = Link.self(linkBuilder.linkToWatcher(ticketId, watcher))
+                    .addMethods("GET", "PUT", "DELETE");
+            WatcherTO watcherTO = new WatcherTO(watcher, selfLink);
+            return ok(new Document<>(watcherTO));
+        } else {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
+    }
+
+    @PutMapping("/tickets/{ticketId}/watchers/{watcherId}")
+    public ResponseEntity<?> putTicketWatcher(
+            @PathVariable(value="ticketId") TicketID ticketId,
+            @PathVariable(value="watcherId") UserID watcher) {
+        return ticketService.findTicket(ticketId)
+                .map(t -> {
+                    t.watch(watcher);
+                    ticketService.update(t);
+                    return ok();
+                })
+                .orElse(notFound());
+    }
+
+    @DeleteMapping("/tickets/{ticketId}/watchers/{watcherId}")
+    public ResponseEntity<?>  removeTicketWatcher(
+            @PathVariable(value="ticketId") TicketID ticketId,
+            @PathVariable(value="watcherId") UserID watcher) {
+        return ticketService.findTicket(ticketId)
+                .map(t -> {
+                    t.unwatch(watcher);
+                    ticketService.update(t);
+                    return ok();
+                })
+                .orElse(notFound());
+    }
+
+    /* ##########   EXERCISE No. 3 ############
+     * Implement Hypermedia! Add some links to your ticket:
+     * - to allowed actions
+     * - to watcher list
+     * - self link to this ticket
+     * Please, take a look at classes Document and LinkBuilder.
      */
 
     // -- internal

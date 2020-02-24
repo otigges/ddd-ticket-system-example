@@ -1,11 +1,17 @@
 package ticket.infrastructure.rest;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import ticket.domain.UserID;
 
 public class WatcherTO {
 
     private final String name;
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private final Link link;
+
+    public WatcherTO(UserID name) {
+        this(name.toString(), null);
+    }
 
     public WatcherTO(UserID name, Link link) {
         this(name.toString(), link);
