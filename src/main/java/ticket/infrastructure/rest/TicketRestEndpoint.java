@@ -52,7 +52,7 @@ public class TicketRestEndpoint {
         return ticketService.findTicket(id)
              .map(ticket -> {
                  Document<TicketTO> doc = new Document<>(TicketTO.from(ticket));
-                 doc.selfLink(linkBuilder.linkTo(ticket)).addMethods("GET", "PUT", "DELETE");
+                 doc.selfLink(linkBuilder.linkTo(ticket)).addMethods("GET", "PATCH", "DELETE");
 
                  for (Action action : ticket.getAllowedActions()) {
                      doc.addLink(linkBuilder.linkToAction(ticket, action), action.name().toLowerCase())
@@ -66,8 +66,29 @@ public class TicketRestEndpoint {
                  return ok(doc);
             })
             .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
+    }
 
-
+    @RequestMapping(
+            value = "/tickets/{id}",
+            method = RequestMethod.PATCH
+    )
+    public ResponseEntity<?> updateTicket(@RequestBody TicketUpdateRequestTO tur,
+                                          @PathVariable(value="id") TicketID id) {
+        return ticketService.findTicket(id)
+                .map(ticket -> {
+                    if (tur.descriptionChanged()) {
+                        ticket.updateDescription(tur.getDescription());
+                    }
+                    if (tur.titleChanged()) {
+                        ticket.updateTitle(tur.getTitle());
+                    }
+                    if (tur.assigneeChanged()) {
+                        ticket.assignTo(new UserID(tur.getAssignee()));
+                    }
+                    ticketService.update(ticket);
+                    return ok(TicketTO.from(ticket));
+                })
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @PostMapping("/tickets")
