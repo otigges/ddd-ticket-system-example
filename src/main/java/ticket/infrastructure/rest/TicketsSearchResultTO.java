@@ -13,5 +13,9 @@ public class TicketsSearchResultTO extends Document<List<Ticket>> {
         tickets.forEach(t -> this.tickets.add(TicketTO.from(t, linkBuilder)));
     }
 
+    public TicketsSearchResultTO(List<Ticket> tickets) {
+        tickets.forEach(t -> this.tickets.add(TicketTO.from(t)));
+    }
+
 }
 
