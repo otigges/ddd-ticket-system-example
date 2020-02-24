@@ -22,13 +22,14 @@ repositories {
 
 dependencies {
     val cucumberVersion = "4.7.4"
+    val springfoxVersion = "2.9.2"
     implementation("org.springframework.boot:spring-boot-starter-web")
     implementation("org.springframework.boot:spring-boot-starter-actuator")
-    //implementation("org.springframework.boot:spring-boot-starter-data-jpa")
-    //implementation("com.h2database:h2")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
     implementation("org.keycloak:keycloak-spring-boot-starter")
     implementation("org.springframework.boot:spring-boot-devtools")
+    implementation("io.springfox:springfox-swagger2:${springfoxVersion}")
+    implementation("io.springfox:springfox-swagger-ui:${springfoxVersion}")
 
     testImplementation("org.springframework.boot:spring-boot-starter-test") {
         exclude(module = "junit")
