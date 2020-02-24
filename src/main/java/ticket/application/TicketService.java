@@ -31,8 +31,8 @@ public class TicketService {
         return repository.get(id);
     }
 
-    public List<Ticket> searchTicket(SearchCriteria criteria) {
-        return repository.search(criteria);
+    public SearchResult searchTicket(SearchCriteria criteria, PageRequest pageRequest) {
+        return repository.search(criteria, pageRequest);
     }
 
     public void update(Ticket ticket) {

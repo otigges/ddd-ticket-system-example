@@ -10,8 +10,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
-public class InMemoryTicketRepository implements TicketRepository {
+public class InMemoryTicketRepository extends AbstractTicketRepository {
 
     private int nextId = 1;
 
@@ -23,8 +24,8 @@ public class InMemoryTicketRepository implements TicketRepository {
     }
 
     @Override
-    public List<Ticket> search(SearchCriteria criteria) {
-        return storage.values().stream().filter(criteria).collect(Collectors.toList());
+    protected Stream<Ticket> allTickets() {
+        return storage.values().stream();
     }
 
     @Override

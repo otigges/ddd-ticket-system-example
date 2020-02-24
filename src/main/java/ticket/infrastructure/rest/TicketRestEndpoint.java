@@ -1,5 +1,7 @@
 package ticket.infrastructure.rest;
 
+import org.apache.catalina.User;
+import org.bouncycastle.crypto.generators.SCrypt;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -14,6 +16,8 @@ import java.util.List;
 import java.util.Set;
 
 import static java.util.Collections.emptySet;
+import static ticket.domain.SearchCriteria.any;
+import static ticket.domain.SearchCriteria.byReporter;
 
 @RestController
 public class TicketRestEndpoint {
@@ -41,9 +45,14 @@ public class TicketRestEndpoint {
     }
 
     @GetMapping("/tickets")
-    public ResponseEntity<?> getTickets() {
-        List<Ticket> tickets = ticketService.searchTicket(SearchCriteria.any());
-        TicketsSearchResultTO result = new TicketsSearchResultTO(tickets, linkBuilder);
+    public ResponseEntity<?> getTickets(
+            @RequestParam(value = "reporter", required = false) UserID reporter,
+            @RequestParam(value = "page", defaultValue = "0") int page,
+            @RequestParam(value = "pageSize", defaultValue = "10") int pageSize
+    ) {
+        SearchCriteria criteria = reporter != null ? byReporter(reporter) : any();
+        SearchResult searchResult = ticketService.searchTicket(criteria, new PageRequest(page, pageSize));
+        TicketsSearchResultTO result = new TicketsSearchResultTO(criteria, searchResult, linkBuilder);
         return ok(result);
     }
 

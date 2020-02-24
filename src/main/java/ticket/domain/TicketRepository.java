@@ -10,10 +10,12 @@ public interface TicketRepository extends TicketIdGenerator {
 
     Optional<Ticket> get(TicketID id);
 
-    List<Ticket> search(SearchCriteria criteria);
+    SearchResult search(SearchCriteria criteria, PageRequest pageRequest);
 
     void add(Ticket ticket);
 
     void update(Ticket ticket);
+
+
 
 }

@@ -1,10 +1,7 @@
 package ticket.infrastructure.rest;
 
 import org.springframework.web.util.UriComponentsBuilder;
-import ticket.domain.Action;
-import ticket.domain.Ticket;
-import ticket.domain.TicketID;
-import ticket.domain.UserID;
+import ticket.domain.*;
 
 import java.net.URI;
 
@@ -54,6 +51,22 @@ public class LinkBuilder {
     public URI linkToAction(Ticket ticket, Action action) {
         return ucb().path("/tickets/{ticketId}/{action}")
                 .buildAndExpand(ticket.getId(), action.toString().toLowerCase()).toUri();
+    }
+
+    public URI linkToNextPage(SearchCriteria criteria, SearchResult searchResult) {
+        return ucb().path("/tickets")
+                .queryParam("reporter", criteria.getReporter())
+                .queryParam("pageSize", searchResult.getPageSize())
+                .queryParam("page", searchResult.getPage() + 1)
+                .build().toUri();
+    }
+
+    public URI linkToPreviousPage(SearchCriteria criteria, SearchResult searchResult) {
+        return ucb().path("/tickets")
+                .queryParam("reporter", criteria.getReporter())
+                .queryParam("pageSize", searchResult.getPageSize())
+                .queryParam("page", searchResult.getPage() - 1)
+                .build().toUri();
     }
 
     public URI linkToInfoEndpoint() {
