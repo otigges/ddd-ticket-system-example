@@ -5,7 +5,7 @@ import java.util.function.Predicate;
 public class SearchCriteria implements Predicate<Ticket> {
 
     public static SearchCriteria any() {
-        return new SearchCriteria(null, null, null, null);
+        return new SearchCriteria();
     }
 
     public static SearchCriteria byStatus(Status status) {
@@ -24,13 +24,16 @@ public class SearchCriteria implements Predicate<Ticket> {
         return new SearchCriteria(null, null, null, watcher);
     }
 
-    Status status;
+    private Status status;
 
-    UserID reporter;
+    private UserID reporter;
 
-    UserID assignee;
+    private UserID assignee;
 
-    UserID watcher;
+    private UserID watcher;
+
+    public SearchCriteria() {
+    }
 
     public SearchCriteria(Status status, UserID reporter, UserID assignee, UserID watcher) {
         this.status = status;
@@ -53,6 +56,22 @@ public class SearchCriteria implements Predicate<Ticket> {
 
     public UserID getWatcher() {
         return watcher;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
+    }
+
+    public void setReporter(UserID reporter) {
+        this.reporter = reporter;
+    }
+
+    public void setAssignee(UserID assignee) {
+        this.assignee = assignee;
+    }
+
+    public void setWatcher(UserID watcher) {
+        this.watcher = watcher;
     }
 
     @Override
