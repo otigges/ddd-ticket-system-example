@@ -30,14 +30,16 @@ public class TicketRestEndpoint {
 
     // -- API
 
+    /* ##########   EXERCISE No. 4 ############
+     * Add a service document as entry point to your API.
+     * The document should contain general information about your API
+     * (see ServiceInfo) and some initial links to tickets, etc.
+     */
+
     @GetMapping("/")
     public ResponseEntity<?>  getServiceDocument(HttpServletRequest request) {
         ServiceInfo info = new ServiceInfo(request);
-        Document<ServiceInfo> document = new Document<>(info);
-        document.addLink(linkBuilder.linkToTicketSearch(), "tickets").addMethods("GET", "POST");
-        document.addLink(linkBuilder.linkToInfoEndpoint(), "info");
-        document.addLink(linkBuilder.linkToHealthEndpoint(), "health");
-        return ok(document);
+        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
     }
 
     @GetMapping("/tickets")
