@@ -5,9 +5,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
-import org.springframework.web.util.UriComponentsBuilder;
+import ticket.domain.DomainEventPublisher;
+import ticket.domain.TicketEvent;
 import ticket.domain.TicketFactory;
-import ticket.domain.TicketID;
 import ticket.domain.TicketRepository;
 import ticket.infrastructure.persistence.FileTicketRepository;
 import ticket.infrastructure.rest.LinkBuilder;
@@ -17,7 +17,14 @@ import java.net.URI;
 @SpringBootApplication
 public class TicketApplication {
 
-    private TicketRepository repo = new FileTicketRepository();
+    private DomainEventPublisher publisher = new DomainEventPublisher() {
+        @Override
+        public void publish(TicketEvent event) {
+            System.out.println(event + "\n");
+        }
+    };
+
+    private TicketRepository repo = new FileTicketRepository(publisher);
 
     @Value("${ticket-system.api.base-uri}")
     private URI apiBaseUri;
@@ -28,9 +35,7 @@ public class TicketApplication {
 
     @Bean
     public TicketFactory ticketFactory() {
-        return new TicketFactory(
-                event -> System.out.println(event + "\n"),
-                repo);
+        return new TicketFactory(publisher, repo);
     }
 
     @Bean
