@@ -54,16 +54,52 @@ public class TicketRestEndpoint {
         return responseTicketCreated(ticket);
     }
 
-    /* ##########   EXERCISE No. 1 ############
-     * Implement update of tickets:
-     * - Title and description may be changed
-     * - ID and reporter may not be changed
-     * - Only valid state transitions may be allowed
-     */
-
-    public ResponseEntity<?> updateTicket() {
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
+    @RequestMapping(
+            value = "/tickets/{id}",
+            method = RequestMethod.PATCH
+    )
+    public ResponseEntity<?> updateTicket(@RequestBody TicketUpdateRequestTO tur,
+                                          @PathVariable(value="id") TicketID id) {
+        return ticketService.findTicket(id)
+                .map(ticket -> {
+                    if (tur.descriptionChanged()) {
+                        ticket.updateDescription(tur.getDescription());
+                    }
+                    if (tur.titleChanged()) {
+                        ticket.updateTitle(tur.getTitle());
+                    }
+                    if (tur.assigneeChanged()) {
+                        ticket.assignTo(new UserID(tur.getAssignee()));
+                    }
+                    ticketService.update(ticket);
+                    return ok(TicketTO.from(ticket));
+                })
+                .orElse(new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
+
+    @PostMapping("/tickets/{id}/{action}")
+    public ResponseEntity<?> perform(@PathVariable(value="id") TicketID id, @PathVariable(value="action") String actionName) {
+        return ticketService.findTicket(id)
+                .map(ticket -> {
+                    try {
+                        ticket.apply(Action.from(actionName));
+                        ticketService.update(ticket);
+                        return ok();
+                    } catch (IllegalStateTransitionException e) {
+                        return new ResponseEntity<>("Action " + actionName
+                                + " is not allowed. Allowed actions are: " + ticket.getAllowedActions(),
+                                HttpStatus.CONFLICT);
+                    }
+                })
+                .orElse(notFound());
+    }
+
+    /* ##########   EXERCISE No. 2 ############
+     * Users can watch tickets. Implement:
+     * - [optional: see the watchers of a given ticket]
+     * - add a watcher for a ticket
+     * - remove a watcher from a ticket
+     */
 
     // -- internal
 
