@@ -3,6 +3,7 @@ package ticket.infrastructure.persistence;
 import ticket.domain.*;
 
 import java.io.*;
+import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,7 +18,10 @@ public class FileTicketRepository implements TicketRepository {
 
     private final File file;
 
-    public FileTicketRepository() {
+    private final DomainEventPublisher publisher;
+
+    public FileTicketRepository(DomainEventPublisher publisher) {
+        this.publisher = publisher;
         this.file = new File("ticket-store.bak");
         load(file);
         nextId = highestId() +1;
@@ -70,9 +74,12 @@ public class FileTicketRepository implements TicketRepository {
                 Ticket[] tickets = (Ticket[]) oin.readObject();
                 for (Ticket ticket : tickets) {
                     storage.put(ticket.getId(), ticket);
+                    Field publisherField = Ticket.class.getDeclaredField("publisher");
+                    publisherField.setAccessible(true);
+                    publisherField.set(ticket, publisher);
                 }
                 oin.close();
-            } catch (IOException | ClassNotFoundException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
                 file.delete();
             }
