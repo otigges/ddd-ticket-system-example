@@ -54,19 +54,11 @@ public class LinkBuilder {
     }
 
     public URI linkToNextPage(SearchCriteria criteria, SearchResult searchResult) {
-        return ucb().path("/tickets")
-                .queryParam("reporter", criteria.getReporter())
-                .queryParam("pageSize", searchResult.getPageSize())
-                .queryParam("page", searchResult.getPage() + 1)
-                .build().toUri();
+        return searchURI(criteria, searchResult.getPageSize(), searchResult.getPage() + 1);
     }
 
     public URI linkToPreviousPage(SearchCriteria criteria, SearchResult searchResult) {
-        return ucb().path("/tickets")
-                .queryParam("reporter", criteria.getReporter())
-                .queryParam("pageSize", searchResult.getPageSize())
-                .queryParam("page", searchResult.getPage() - 1)
-                .build().toUri();
+        return searchURI(criteria, searchResult.getPageSize(), searchResult.getPage() + 1);
     }
 
     public URI linkToInfoEndpoint() {
@@ -77,12 +69,29 @@ public class LinkBuilder {
         return ucb().path("/actuator/health").build().toUri();
     }
 
-
-
     // internal
 
     private UriComponentsBuilder ucb() {
         return UriComponentsBuilder.fromUri(baseUri);
+    }
+
+    private URI searchURI(SearchCriteria criteria, int pageSize, int page) {
+        UriComponentsBuilder ucb = ucb().path("/tickets")
+                .queryParam("pageSize", pageSize)
+                .queryParam("page", page);
+        if (criteria.getReporter() != null) {
+            ucb = ucb.queryParam("reporter", criteria.getReporter());
+        }
+        if (criteria.getAssignee() != null) {
+            ucb = ucb.queryParam("assignee", criteria.getAssignee());
+        }
+        if (criteria.getStatus() != null) {
+            ucb = ucb.queryParam("status", criteria.getStatus());
+        }
+        if (criteria.getWatcher() != null) {
+            ucb = ucb.queryParam("watcher", criteria.getWatcher());
+        }
+        return ucb.build().toUri();
     }
 
 }
