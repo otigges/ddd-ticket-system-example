@@ -155,7 +155,13 @@ public class TicketRestEndpoint {
      * - to allowed actions
      * - to watcher list
      * - self link to this ticket
-     * Please, take a look at classes Document and LinkBuilder.
+     * Please, take a look at classes Document, TicketTO, and LinkBuilder.
+     * E.g. you can add a self link to a ticket if you create it this way:
+     *
+     * <code>
+     *  TicketTO.from(ticket, linkBuilder);
+     * </code>
+     *
      */
 
     // -- internal
