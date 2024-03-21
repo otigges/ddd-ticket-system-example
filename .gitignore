@@ -11,3 +11,6 @@ out
 
 #Ignore local store
 ticket-store.bak
+
+# Mac OS X
+.DS_Store

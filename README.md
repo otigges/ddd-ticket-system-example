@@ -6,7 +6,7 @@ Example for Domain-driven Design, showing how to build technology free Internal 
 
 Prerequisites:
 
-    * JDK (8-13)
+    * JDK 21
     * Optional: Keycloak
     
 To build, test and run use gradle:

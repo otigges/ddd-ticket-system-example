@@ -1,5 +1,8 @@
 package ticket.domain;
 
+/**
+ * Actions that can be performed on a ticket.
+ */
 public enum Action {
     START_PROGRESS,
     RESOLVE,

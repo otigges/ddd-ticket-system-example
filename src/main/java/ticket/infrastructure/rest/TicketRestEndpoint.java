@@ -1,21 +1,24 @@
 package ticket.infrastructure.rest;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import ticket.application.TicketService;
 import ticket.domain.*;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 import java.util.Set;
 
 import static java.util.Collections.emptySet;
 import static ticket.domain.SearchCriteria.any;
 import static ticket.domain.SearchCriteria.byReporter;
 
+/**
+ * REST endpoint for ticket management
+ */
 @RestController
 public class TicketRestEndpoint {
 
@@ -98,7 +101,7 @@ public class TicketRestEndpoint {
     }
 
     @PostMapping("/tickets")
-    public ResponseEntity<?> createTicket(@Valid @RequestBody TicketCreateRequestTO tcr) {
+    public ResponseEntity<?> createTicket(@Validated @RequestBody TicketCreateRequestTO tcr) {
         UserID reporter = new UserID(tcr.getReporter());
         Ticket ticket = ticketService.createTicket(reporter, tcr.getTitle(), tcr.getDescription(), reporter);
         return responseTicketCreated(ticket);

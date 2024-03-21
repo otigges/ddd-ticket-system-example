@@ -9,19 +9,18 @@ import java.util.Stack;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-
+/**
+ * Tests for the ticket domain.
+ */
 public class TicketTest {
 
     private final UserID JOHN = new UserID();
 
     private int ticketIdGen = 1;
 
-    private Stack<TicketEvent> EVENT_LOG = new Stack<>();
+    private final Stack<TicketEvent> EVENT_LOG = new Stack<>();
 
-    private TicketFactory ticketFactory = new TicketFactory(event -> {
-        System.out.println(event);
-        EVENT_LOG.push(event);
-    }, () -> new TicketID(ticketIdGen++) );
+    private final TicketFactory ticketFactory = new TicketFactory(EVENT_LOG::push, () -> new TicketID(ticketIdGen++) );
 
     @Test()
     public void canOnlyReopenTicketsThatAreResolvedOrClosedOrArchived() throws IllegalStateTransitionException {
@@ -55,16 +54,15 @@ public class TicketTest {
 
     @Test()
     public void eventsSentOnTicketClose() throws IllegalStateTransitionException {
-        Ticket ticket = ticketFactory.createNewTicket(JOHN, "title", "desc");
+        assertTrue(EVENT_LOG.empty());
+
+        var ticket = ticketFactory.createNewTicket(JOHN, "title", "desc");
 
         ticket.apply(Action.START_PROGRESS);
         ticket.apply(Action.RESOLVE);
-
-        assertTrue(EVENT_LOG.empty());
-
         ticket.apply(Action.CLOSE);
 
-        assertEquals(1, EVENT_LOG.size());
+        assertEquals(2, EVENT_LOG.size());
 
         TicketEvent event = EVENT_LOG.peek();
 

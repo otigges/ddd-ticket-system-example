@@ -3,17 +3,20 @@ package ticket.infrastructure.rest;
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.representations.AccessToken;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
+/**
+ * Service information.
+ */
 public class ServiceInfo {
 
     private final String name = "ticket-system";
     private final String version = "1.0.0";
     private final String status = "OK";
-    private final KeycloakPrincipal userPrincipal;
+    private final KeycloakPrincipal<?> userPrincipal;
 
     public ServiceInfo(HttpServletRequest request) {
-        this.userPrincipal = (KeycloakPrincipal) request.getUserPrincipal();
+        this.userPrincipal = (KeycloakPrincipal<?>) request.getUserPrincipal();
     }
 
     public String getName() {

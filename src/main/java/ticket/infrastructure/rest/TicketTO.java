@@ -9,6 +9,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * Transfer object for a ticket.
+ */
 public class TicketTO {
 
     private String id;

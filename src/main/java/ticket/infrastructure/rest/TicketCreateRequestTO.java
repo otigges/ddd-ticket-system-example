@@ -1,7 +1,11 @@
 package ticket.infrastructure.rest;
 
-import javax.validation.constraints.NotBlank;
 
+import jakarta.validation.constraints.NotBlank;
+
+/**
+ * Transfer object for creating a ticket.
+ */
 public class TicketCreateRequestTO {
 
     @NotBlank
