@@ -4,10 +4,9 @@ import io.cucumber.java.en.Given;
 import io.cucumber.java.en.Then;
 import io.cucumber.java.en.When;
 import ticket.application.TicketService;
-import ticket.demo.DemoFactory;
 import ticket.domain.*;
 import ticket.domain.TicketFactory.TicketBuilder;
-import ticket.infrastructure.persistence.InMemoryTicketRepository;
+import ticket.adapters.persistence.InMemoryTicketRepository;
 
 import java.util.Optional;
 
@@ -15,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 public class TicketStepdefs {
 
-    private final TicketFactory factory = new DemoFactory();
+    private final TicketFactory factory = new ClientDemo.DemoFactory();
     private final InMemoryTicketRepository repository = new InMemoryTicketRepository();
     private final TicketService service = new TicketService(factory, repository);
 

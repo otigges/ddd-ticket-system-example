@@ -1,4 +1,4 @@
-package ticket.infrastructure.rest.config;
+package ticket.adapters.rest.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.convert.converter.Converter;

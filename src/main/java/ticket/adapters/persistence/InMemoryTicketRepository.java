@@ -1,15 +1,11 @@
-package ticket.infrastructure.persistence;
+package ticket.adapters.persistence;
 
-import ticket.domain.SearchCriteria;
 import ticket.domain.Ticket;
 import ticket.domain.TicketID;
-import ticket.domain.TicketRepository;
 
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class InMemoryTicketRepository extends AbstractTicketRepository {

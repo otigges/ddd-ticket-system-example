@@ -1,4 +1,4 @@
-package ticket.demo;
+package ticket;
 
 import ticket.domain.*;
 
@@ -41,4 +41,24 @@ public class ClientDemo {
         System.out.println(msg);
     }
 
+    public static class DemoFactory extends TicketFactory {
+
+        private static int sequenceGen = 0;
+
+        public DemoFactory() {
+            super(new DomainEventPublisher() {
+                @Override
+                public void publish(TicketEvent event) {
+                    System.out.println(event);
+                }
+            }, new TicketIdGenerator() {
+                @Override
+                public TicketID next() {
+                    return new TicketID(++sequenceGen);
+                }
+            });
+        }
+
+
+    }
 }

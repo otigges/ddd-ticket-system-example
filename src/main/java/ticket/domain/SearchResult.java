@@ -4,6 +4,9 @@ import java.util.List;
 
 import static java.util.Collections.unmodifiableList;
 
+/**
+ * The result of a search for tickets.
+ */
 public class SearchResult {
 
     private final List<Ticket> tickets;

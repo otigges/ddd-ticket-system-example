@@ -1,4 +1,4 @@
-package ticket.infrastructure.rest;
+package ticket.adapters.rest;
 
 import org.keycloak.KeycloakPrincipal;
 import org.keycloak.representations.AccessToken;

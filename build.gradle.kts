@@ -33,10 +33,9 @@ dependencies {
 
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 
-	implementation("io.cucumber:cucumber-java:${cucumberVersion}")
-	implementation("io.cucumber:cucumber-junit:${cucumberVersion}")
-	implementation("io.cucumber:cucumber-spring:${cucumberVersion}")
-
+	testImplementation("io.cucumber:cucumber-java:${cucumberVersion}")
+	testImplementation("io.cucumber:cucumber-junit:${cucumberVersion}")
+	testImplementation("io.cucumber:cucumber-spring:${cucumberVersion}")
 
 }
 

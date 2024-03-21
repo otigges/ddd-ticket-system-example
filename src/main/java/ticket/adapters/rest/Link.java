@@ -1,4 +1,4 @@
-package ticket.infrastructure.rest;
+package ticket.adapters.rest;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 

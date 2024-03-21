@@ -9,8 +9,8 @@ import ticket.domain.DomainEventPublisher;
 import ticket.domain.TicketEvent;
 import ticket.domain.TicketFactory;
 import ticket.domain.TicketRepository;
-import ticket.infrastructure.persistence.FileTicketRepository;
-import ticket.infrastructure.rest.LinkBuilder;
+import ticket.adapters.persistence.FileTicketRepository;
+import ticket.adapters.rest.LinkBuilder;
 
 import java.net.URI;
 

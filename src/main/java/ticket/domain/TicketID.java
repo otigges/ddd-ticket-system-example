@@ -5,6 +5,9 @@ import stereotypes.ValueObject;
 import java.io.Serializable;
 import java.util.Objects;
 
+/**
+ * The unique identifier for a ticket.
+ */
 @ValueObject
 public class TicketID implements Serializable {
 

@@ -9,6 +9,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * The main domain object of the ticket system.
+ */
 @Aggregate
 public class Ticket implements Serializable {
 

@@ -1,4 +1,4 @@
-package ticket.infrastructure.rest;
+package ticket.adapters.rest;
 
 import org.springframework.web.util.UriComponentsBuilder;
 import ticket.domain.*;

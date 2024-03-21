@@ -1,4 +1,4 @@
-package ticket.infrastructure.persistence;
+package ticket.adapters.persistence;
 
 import ticket.domain.*;
 
